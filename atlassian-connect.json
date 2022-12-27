@@ -1,7 +1,7 @@
   {
      "name": "Hello World",
      "description": "Atlassian Connect app",
-     "key": "bugbounty-medma-gotya",
+     "key": "bugbounty-medma-app",
      "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
      "vendor": {
          "name": "Example, Inc.",
