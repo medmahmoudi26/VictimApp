@@ -1,7 +1,7 @@
   {
      "name": "Hello World",
      "description": "Atlassian Connect app",
-     "key": "bugbounty-medma-app",
+     "key": "is.origo.jira.tempo-plugin",
      "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
      "vendor": {
          "name": "Example, Inc.",
@@ -23,5 +23,6 @@
                  }
              }
          ]
-     }
+     },
+    "version":"1.0.0"
 } 
