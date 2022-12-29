@@ -1,6 +1,6 @@
 {
   "key": "com.eazybi.jira.plugins.eazybi-jira",
-  "baseUrl": "https://aod.eazybi.com",
+  "baseUrl": "https://github.com",
   "name": "eazyBI for Jira Cloud",
   "description": "eazyBI provides easy drag-and-drop creation of custom Jira reports, charts and dashboard gadgets.",
   "vendor": {
