@@ -1,7 +1,7 @@
   {
      "name": "Hello World",
      "description": "Atlassian Connect app",
-     "key": "bugbounty-medma-gotya",
+     "key": "com.eazybi.jira.plugins.eazybi-jira",
      "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
      "vendor": {
          "name": "Example, Inc.",
