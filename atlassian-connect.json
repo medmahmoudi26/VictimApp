@@ -1,28 +1,795 @@
-  {
-     "name": "Hello World",
-     "description": "Atlassian Connect app",
-     "key": "is.origo.jira.tempo-plugin",
-     "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
-     "vendor": {
-         "name": "Example, Inc.",
-         "url": "https://example.com",
-         "url[0":"javascript:alert(1)"
-     },
-     "authentication": {
-         "type": "none"
-     },
-     "apiVersion": 1,
-     "modules": {
-         "generalPages": [
-             {
-                 "url": "/helloworld.html",
-                 "key": "hello-world",
-                 "location": "system.top.navigation.bar",
-                 "name": {
-                     "value": "Greeting"
-                 }
-             }
-         ]
-     },
-    "version":"1.0.0"
-} 
+{
+  "name": "Timesheets",
+  "key": "is.origo.jira.tempo-plugin",
+  "baseUrl": "https://app.tempo.io",
+  "apiMigrations": {
+    "gdpr": true,
+    "context-qsh": true,
+    "signed-install": true
+  },
+  "description": "Tempo for Cloud",
+  "apiVersion": 1,
+  "enableLicensing": true,
+  "vendor": {
+    "name": "Tempo",
+    "url": "https://www.tempo.io/"
+  },
+  "authentication": {
+    "type": "jwt"
+  },
+  "dependencies": {
+    "addons": [
+      {
+        "key": "io.tempo.jira"
+      }
+    ]
+  },
+  "lifecycle": {
+    "installed": "/addons/jira/webhooks/lifecycle/install/",
+    "uninstalled": "/addons/jira/webhooks/lifecycle/uninstall/",
+    "disabled": "/addons/jira/webhooks/lifecycle/disable/",
+    "enabled": "/addons/jira/webhooks/lifecycle/enable/"
+  },
+  "modules": {
+    "jiraIssueContexts": [
+      {
+        "icon": {
+          "width": 16,
+          "height": 16,
+          "url": "https://static.tempo.io/io/non-versioned/img/tempo-logo-jira-grey.svg"
+        },
+        "content": {
+          "type": "label",
+          "label": {
+            "value": "Tempo"
+          }
+        },
+        "target": {
+          "type": "web_panel",
+          "url": "/timesheets/jira/issue-sidepanel/{project.key}/{issue.id}/{issue.key}/?can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}"
+        },
+        "conditions": [
+          {
+            "condition": "user_is_logged_in"
+          },
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "or": [
+              {
+                "condition": "has_project_permission",
+                "params": {
+                  "permission": "work"
+                }
+              },
+              {
+                "condition": "has_project_permission",
+                "params": {
+                  "permission": "io.tempo.jira__view-all-worklogs"
+                }
+              },
+              {
+                "condition": "has_project_permission",
+                "params": {
+                  "permission": "io.tempo.jira__view-issue-hours"
+                }
+              }
+            ]
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ],
+        "name": {
+          "value": "Tempo"
+        },
+        "key": "tempo-issue-context"
+      }
+    ],
+    "webhooks": [
+      {
+        "event": "worklog_created",
+        "url": "/addons/jira/webhooks/worklog/",
+        "propertyKeys": [
+          "tempo"
+        ],
+        "excludeBody": false
+      },
+      {
+        "event": "worklog_updated",
+        "url": "/addons/jira/webhooks/worklog/",
+        "propertyKeys": [
+          "tempo"
+        ],
+        "excludeBody": false
+      },
+      {
+        "event": "worklog_deleted",
+        "url": "/addons/jira/webhooks/worklog/"
+      }
+    ],
+    "jiraTimeTrackingProviders": [
+      {
+        "name": {
+          "value": "Tempo Timesheets"
+        },
+        "key": "timetracking-provider"
+      }
+    ],
+    "configurePage": {
+      "location": "tempo-configuration-container",
+      "url": "/configuration/jira/?can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}&fromTimesheetsConfigureButton=true",
+      "key": "tempo-configuration-page",
+      "name": {
+        "value": "Tempo configuration"
+      },
+      "conditions": [
+        {
+          "condition": "user_is_logged_in"
+        }
+      ]
+    },
+    "generalPages": [
+      {
+        "location": "none",
+        "key": "tempo-issue-panel-remove-worklog",
+        "url": "/timesheets/jira/issue-panel-remove-worklog/?can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "name": {
+          "value": "Issue Panel Remove Worklog"
+        }
+      },
+      {
+        "location": "none",
+        "key": "issue-panel-split-worklog-dialog",
+        "url": "/timesheets/jira/issue-panel-split-worklog-dialog/?issue_id={issue.id}&issue_key={issue.key}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "name": {
+          "value": "Issue Panel Split Worklog Dialog"
+        }
+      },
+      {
+        "location": "none",
+        "key": "tempo-worklog-form",
+        "url": "/timesheets/jira/worklog-form/?issue_id={issue.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "name": {
+          "value": "Worklog Form"
+        }
+      },
+      {
+        "location": "none",
+        "key": "tempo-plan-dialog",
+        "url": "/planner/jira/plan-dialog/?issue_id={issue.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "name": {
+          "value": "Plan Form"
+        }
+      },
+      {
+        "location": "none",
+        "key": "tempo-remove-plan-dialog",
+        "url": "/planner/jira/remove-plan-dialog/?can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "name": {
+          "value": "Delete Plan Form"
+        }
+      }
+    ],
+    "jiraDashboardItems": [
+      {
+        "name": {
+          "value": "Tempo Worklog Distribution",
+          "i18n": "connect.descriptor.dashboard.item.worklog.distribution.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/worklog-distribution/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "worklog-distribution-dashboard-item",
+        "description": {
+          "value": "Display logged work statuses by epics, sprint, issue, issue types, users, projects, and accounts. Viewable in pie chart, donut chart, and column chart format.",
+          "i18n": "connect.descriptor.dashboard.item.worklog.distribution.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-worklog-distribution-di.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo Account Custom Budget Burn-up Chart",
+          "i18n": "connect.descriptor.dashboard.item.account.custom.burnup.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/account-hours-custom-budget-burnup-chart/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "account-hours-custom-budget-burnup-chart-dashboard-item",
+        "description": {
+          "value": "Displays a burn-up chart of the account's customized goal for the selected period.",
+          "i18n": "connect.descriptor.dashboard.item.account.custom.burnup.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-account-custom-budget-burnup.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo Account Monthly Budget Burn-up Chart",
+          "i18n": "connect.descriptor.dashboard.item.account.monthly.burnup.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/account-hours-monthly-budget-burnup-chart/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "account-hours-monthly-budget-burnup-chart-dashboard-item",
+        "description": {
+          "value": "Displays a burn-up chart of the account's monthly budget for the selected period.",
+          "i18n": "connect.descriptor.dashboard.item.account.monthly.burnup.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-account-monthly-budget-burnup.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo User Timesheet",
+          "i18n": "connect.descriptor.dashboard.item.user.timesheet.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/user-timesheet/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "user-timesheet-dashboard-item",
+        "description": {
+          "value": "Display a user's timesheet, filtered by periods.",
+          "i18n": "connect.descriptor.dashboard.item.user.timesheet.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-user-timesheet-di.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo Team Timesheet",
+          "i18n": "connect.descriptor.dashboard.item.team.timesheet.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/team-timesheet/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "team-timesheet-dashboard-item",
+        "description": {
+          "value": "Display a team's timesheet, filtered by periods.",
+          "i18n": "connect.descriptor.dashboard.item.team.timesheet.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-team-timesheet-di.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo Team Hours",
+          "i18n": "connect.descriptor.dashboard.item.team.hours.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/team-hours/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "team-hours-dashboard-item",
+        "description": {
+          "value": "Display planned, worked, and required hours for each team member to track overall planned and worked time.",
+          "i18n": "connect.descriptor.dashboard.item.team.hours.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-team-hours-di.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo User Timesheet Progress",
+          "i18n": "connect.descriptor.dashboard.item.user.timesheet.progress.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/user-timesheet-progress/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "user-timesheet-progress-dashboard-item",
+        "description": {
+          "value": "Display timesheet progress for user.",
+          "i18n": "connect.descriptor.dashboard.item.user.timesheet.progress.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-user-timesheet-progress-di.png",
+        "configurable": false,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo User Timesheet Charts",
+          "i18n": "connect.descriptor.dashboard.item.user.timesheet.chart.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/user-timesheet-charts/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "user-timesheet-charts-dashboard-item",
+        "description": {
+          "value": "Display hours worked and planned by the current user, viewable by pie chart or column chart.",
+          "i18n": "connect.descriptor.dashboard.item.user.timesheet.chart.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-user-timesheet-charts-di.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo People in Version",
+          "i18n": "connect.descriptor.dashboard.item.people.in.version.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/people-in-version/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "people-in-version-dashboard-item",
+        "description": {
+          "value": "Display people in version and how much they have worked on it.",
+          "i18n": "connect.descriptor.dashboard.item.people.in.version.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-people-in-version-di.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo Trackers",
+          "i18n": "connect.descriptor.dashboard.item.trackers.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/tempo-trackers/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "tempo-trackers-dashboard-item",
+        "description": {
+          "value": "Display all trackers and create new ones.",
+          "i18n": "connect.descriptor.dashboard.item.trackers.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-trackers-di.png",
+        "configurable": false,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo Account Hours by Customer",
+          "i18n": "connect.descriptor.dashboard.item.account.hours.by.customer.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/account-hours-by-customer/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "tempo-account-hours-by-customer-dashboard-item",
+        "description": {
+          "value": "Displays all logged hours to the customer's accounts. The data can be displayed using pie chart, column chart or table.",
+          "i18n": "connect.descriptor.dashboard.item.account.hours.by.customer.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-account-hours-by-customer-di.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      },
+      {
+        "name": {
+          "value": "Tempo Total Hours",
+          "i18n": "connect.descriptor.dashboard.item.total.hours.title"
+        },
+        "url": "/timesheets/jira/dashboard-items/total-hours/?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "key": "tempo-total-hours",
+        "description": {
+          "value": "Display total hours, for a period by Account/Categories/Customer, viewable by pie chart, column chart or by table",
+          "i18n": "connect.descriptor.dashboard.item.total.hours.description"
+        },
+        "thumbnailUrl": "https://static.tempo.io/io/non-versioned/img/tempo-total-hours-di.png",
+        "configurable": true,
+        "conditions": [
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      }
+    ],
+    "webPanels": [
+      {
+        "url": "/timesheets/jira/issue-sidepanel/{project.key}/{issue.id}/{issue.key}/?can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "location": "atl.jira.view.issue.right.context",
+        "layout": {
+          "width": "100%",
+          "height": "100%"
+        },
+        "weight": 50,
+        "key": "tempo-issue-sidepanel",
+        "name": {
+          "value": "Tempo"
+        },
+        "supportsNative": true,
+        "conditions": [
+          {
+            "condition": "user_is_logged_in"
+          },
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "or": [
+              {
+                "condition": "has_project_permission",
+                "params": {
+                  "permission": "work"
+                }
+              },
+              {
+                "condition": "has_project_permission",
+                "params": {
+                  "permission": "io.tempo.jira__view-all-worklogs"
+                }
+              },
+              {
+                "condition": "has_project_permission",
+                "params": {
+                  "permission": "io.tempo.jira__view-issue-hours"
+                }
+              }
+            ]
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      }
+    ],
+    "jiraProjectPages": [
+      {
+        "url": "/timesheets/jira/project-timesheet?projectKey=${project.key}",
+        "iconUrl": "https://static.tempo.io/io/non-versioned/img/tempo-logo-jira-grey.svg",
+        "weight": 640,
+        "name": {
+          "value": "Timesheet"
+        },
+        "key": "tempo-project-centric-timesheet-panel",
+        "conditions": [
+          {
+            "condition": "user_is_logged_in"
+          },
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "has_project_permission",
+            "params": {
+              "permission": "work"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      }
+    ],
+    "webItems": [
+      {
+        "location": "operations-top-level",
+        "name": {
+          "value": "Log Time"
+        },
+        "key": "tempo-log-work-issue-action",
+        "url": "/timesheets/jira/worklog-form/?issue_id={issue.id}&withoutCustomData=true&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}&triggerLocation=operations-top-level",
+        "target": {
+          "type": "dialog",
+          "options": {
+            "width": "100%",
+            "height": "100%",
+            "chrome": false,
+            "header": {
+              "value": "Create worklog"
+            }
+          }
+        },
+        "conditions": [
+          {
+            "condition": "user_is_logged_in"
+          },
+          {
+            "condition": "addon_time_tracking_provider_enabled",
+            "params": {
+              "addonKey": "is.origo.jira.tempo-plugin",
+              "moduleKey": "timetracking-provider"
+            }
+          },
+          {
+            "condition": "has_project_permission",
+            "params": {
+              "permission": "work"
+            }
+          },
+          {
+            "condition": "addon_is_licensed"
+          },
+          {
+            "condition": "has_global_permission",
+            "params": {
+              "permission": "io.tempo.jira__tempo-timesheets-access"
+            }
+          }
+        ]
+      }
+    ],
+    "dialogs": [
+      {
+        "key": "tempo-worklog-form-dialog",
+        "url": "/timesheets/jira/worklog-form/?withoutCustomData=true&can_log_work_for_others={condition.has_project_permission(permission=io.tempo.jira__log-work-for-others)}&can_set_billable_hours={condition.has_project_permission(permission=io.tempo.jira__set-billable-hours)}&can_view_all_worklogs={condition.has_project_permission(permission=io.tempo.jira__view-all-worklogs)}&can_view_issue_hours={condition.has_project_permission(permission=io.tempo.jira__view-issue-hours)}&cost_tracker_access={condition.has_global_permission(permission=io.tempo.jira__tempo-projects-access)}&is_jira_admin={condition.has_global_permission(permission=ADMINISTER)}&is_tempo_account_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-account-administrator)}&is_tempo_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-administrator)}&is_tempo_team_admin={condition.has_global_permission(permission=io.tempo.jira__tempo-team-administrator)}&is_tempo_timetracking={condition.addon_time_tracking_provider_enabled(addonKey=is.origo.jira.tempo-plugin, moduleKey=timetracking-provider)}&perm_delete_all_worklogs={condition.has_project_permission(permission=DELETE_ALL_WORKLOGS)}&perm_delete_own_worklogs={condition.has_project_permission(permission=DELETE_OWN_WORKLOGS)}&perm_edit_all_worklogs={condition.has_project_permission(permission=EDIT_ALL_WORKLOGS)}&perm_edit_own_worklogs={condition.has_project_permission(permission=EDIT_OWN_WORKLOGS)}&perm_work_on_issues={condition.has_project_permission(permission=WORK_ON_ISSUES)}&planner_access={condition.has_global_permission(permission=io.tempo.jira__tempo-planner-access)}&timesheets_access={condition.has_global_permission(permission=io.tempo.jira__tempo-timesheets-access)}",
+        "options": {
+          "width": "100%",
+          "height": "100%",
+          "header": {
+            "value": "Create worklog"
+          },
+          "chrome": false
+        }
+      }
+    ],
+    "keyboardShortcuts": [
+      {
+        "shortcut": "w",
+        "target": {
+          "key": "tempo-worklog-form-dialog"
+        },
+        "context": "global",
+        "name": {
+          "value": "Open Tempo worklog dialog"
+        },
+        "key": "tempo-open-worklog-form-shortcut"
+      },
+      {
+        "shortcut": "w",
+        "target": {
+          "key": "tempo-log-work-issue-action"
+        },
+        "context": "issue_navigation",
+        "name": {
+          "value": "Open Tempo worklog dialog"
+        },
+        "key": "tempo-open-issue-worklog-form-shortcut"
+      },
+      {
+        "shortcut": "w",
+        "target": {
+          "key": "tempo-log-work-issue-action"
+        },
+        "context": "issue_action",
+        "name": {
+          "value": "Open Tempo worklog dialog"
+        },
+        "key": "tempo-open-issue-action-worklog-form-shortcut"
+      },
+      {
+        "shortcut": "w",
+        "target": {
+          "key": "tempo-log-work-issue-action"
+        },
+        "context": "agile_board",
+        "name": {
+          "value": "Open Tempo worklog dialog"
+        },
+        "key": "tempo-open-agile-board-worklog-form-shortcut"
+      }
+    ]
+  },
+  "translations": {
+    "paths": {
+      "fr-FR": "/io/i18n/i18n?lang=fr",
+      "ru-RU": "/io/i18n/i18n?lang=ru",
+      "es-ES": "/io/i18n/i18n?lang=es",
+      "de-DE": "/io/i18n/i18n?lang=de",
+      "pt-PT": "/io/i18n/i18n?lang=pt"
+    }
+  },
+  "scopes": [
+    "read",
+    "write",
+    "delete",
+    "act_as_user",
+    "admin",
+    "access_email_addresses"
+  ],
+  "version": "1.0.0"
+}
