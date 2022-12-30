@@ -5,7 +5,7 @@
   },
   "name": "GitHub for Jira",
   "description": "Connect your code and your project with ease.",
-  "key": "com.github.integration.production-key",
+  "key": "com.github.integration.production",
   "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
   "vendor": {
     "name": "Atlassian",
