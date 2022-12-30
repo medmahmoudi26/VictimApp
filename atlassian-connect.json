@@ -11,9 +11,6 @@
     "name": "Atlassian",
     "url": "https://atlassian.com"
   },
-  "authentication": {
-    "type": "jwt"
-  },
   "scopes": [
     "READ",
     "WRITE",
