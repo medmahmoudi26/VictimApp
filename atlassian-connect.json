@@ -1,8 +1,9 @@
 {
   "name": "GitHub for Jira",
   "description": "Connect your code and your project with ease.",
-  "key": "com.github.integration.production",
+  "key": "bugbounty-medma-app",
   "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
+  "enableLicensing": true,
   "vendor": {
     "name": "Atlassian",
     "url": "https://atlassian.com"
