@@ -157,8 +157,7 @@
   },
   "scopes": [
     "READ",
-    "ACT_AS_USER",
-    "ACCESS_EMAIL_ADDRESSES"
+    "ACT_AS_USER"
   ],
   "version": "6.0.0-AC"
 }
