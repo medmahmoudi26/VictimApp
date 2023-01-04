@@ -43,32 +43,6 @@
         "value": "Get started"
       }
     },
-    "jiraDashboardItems": [
-      {
-        "key": "report-gadget",
-        "name": {
-          "value": "eazyBI report"
-        },
-        "description": {
-          "value": "Embed selected eazyBI report."
-        },
-        "url": "/atlassian-connect/eazybi-jira/jira_dashboard_items/report?jira_dashboard_id={dashboard.id}&jira_dashboard_item_id={dashboardItem.id}&view_type={dashboardItem.viewType}&user_is_admin={condition.user_is_admin}",
-        "configurable": false,
-        "thumbnailUrl": "/images/eazybi_gadget.png"
-      },
-      {
-        "key": "dashboard-gadget",
-        "name": {
-          "value": "eazyBI dashboard"
-        },
-        "description": {
-          "value": "Embed selected eazyBI dashboard."
-        },
-        "url": "/atlassian-connect/eazybi-jira/jira_dashboard_items/dashboard?jira_dashboard_id={dashboard.id}&jira_dashboard_item_id={dashboardItem.id}&view_type={dashboardItem.viewType}&user_is_admin={condition.user_is_admin}",
-        "configurable": false,
-        "thumbnailUrl": "/images/eazybi_gadget.png"
-      }
-    ],
     "webhooks": [
       {
         "event": "jira:issue_created",
