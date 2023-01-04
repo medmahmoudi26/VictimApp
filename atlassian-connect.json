@@ -1,8 +1,8 @@
 {
-  "key": "com.eazybi.jira.plugins.eazybi-jira",
+  "key": "com.eazybi.confluence.plugins.eazybi-confluence",
   "baseUrl": "https://aod.eazybi.com",
-  "name": "eazyBI for Jira Cloud",
-  "description": "eazyBI provides easy drag-and-drop creation of custom Jira reports, charts and dashboard gadgets.",
+  "name": "eazyBI for Confluence Cloud",
+  "description": "eazyBI provides easy drag-and-drop creation of custom Confluence reports, charts and dashboards.",
   "vendor": {
     "name": "eazyBI",
     "url": "https://eazybi.com"
@@ -13,16 +13,16 @@
     "context-qsh": true
   },
   "lifecycle": {
-    "installed": "/atlassian-connect/eazybi-jira/installed",
-    "uninstalled": "/atlassian-connect/eazybi-jira/uninstalled",
-    "enabled": "/atlassian-connect/eazybi-jira/enabled",
-    "disabled": "/atlassian-connect/eazybi-jira/disabled"
+    "installed": "/atlassian-connect/eazybi-confluence/installed",
+    "uninstalled": "/atlassian-connect/eazybi-confluence/uninstalled",
+    "enabled": "/atlassian-connect/eazybi-confluence/enabled",
+    "disabled": "/atlassian-connect/eazybi-confluence/disabled"
   },
   "modules": {
     "generalPages": [
       {
         "key": "home",
-        "url": "/atlassian-connect/eazybi-jira/home?redirect_to={ac.redirect_to}&user_is_admin={condition.user_is_admin}",
+        "url": "/atlassian-connect/eazybi-confluence/home?redirect_to={ac.redirect_to}&user_is_admin={condition.user_is_admin}",
         "conditions": [
           {
             "condition": "user_is_logged_in"
@@ -33,96 +33,295 @@
         },
         "icon": {
           "url": "/images/eazybi-icon-white.svg"
-        }
+        },
+        "location": "system.header/left"
       }
     ],
     "postInstallPage": {
       "key": "getting-started",
-      "url": "/atlassian-connect/eazybi-jira/getting_started?user_is_admin={condition.user_is_admin}",
+      "url": "/atlassian-connect/eazybi-confluence/getting_started?user_is_admin={condition.user_is_admin}",
       "name": {
         "value": "Get started"
       }
     },
+    "dynamicContentMacros": [
+      {
+        "key": "confluence-report-gadget",
+        "name": {
+          "value": "eazyBI for Confluence report"
+        },
+        "description": {
+          "value": "Embed selected eazyBI for Confluence report."
+        },
+        "renderModes": {
+          "default": {
+            "url": "/atlassian-connect/eazybi-confluence/confluence_macros/report.png?params={params}&user_is_admin={condition.user_is_admin}"
+          }
+        },
+        "url": "/atlassian-connect/eazybi-confluence/confluence_macros/report?params={params}&user_is_admin={condition.user_is_admin}",
+        "editor": {
+          "insertTitle": {
+            "value": "Insert eazyBI for Confluence report"
+          },
+          "editTitle": {
+            "value": "Edit eazyBI for Confluence report"
+          },
+          "url": "/atlassian-connect/eazybi-confluence/confluence_macros/report?editor=true&user_is_admin={condition.user_is_admin}",
+          "width": "90%"
+        },
+        "parameters": [
+          {
+            "identifier": "params",
+            "name": {
+              "value": "Params"
+            },
+            "type": "string",
+            "required": true
+          }
+        ],
+        "categories": [
+          "external-content",
+          "reporting"
+        ],
+        "icon": {
+          "url": "/images/eazybi_gadget_square.png"
+        },
+        "imagePlaceholder": {
+          "width": 300,
+          "height": 30,
+          "url": "/atlassian-connect/eazybi-confluence/confluence_macros/image_placeholder"
+        },
+        "width": "100%"
+      },
+      {
+        "key": "confluence-dashboard-gadget",
+        "name": {
+          "value": "eazyBI for Confluence dashboard"
+        },
+        "description": {
+          "value": "Embed selected eazyBI for Confluence dashboard."
+        },
+        "renderModes": {
+          "default": {
+            "url": "/atlassian-connect/eazybi-confluence/confluence_macros/dashboard.png?params={params}&user_is_admin={condition.user_is_admin}"
+          }
+        },
+        "url": "/atlassian-connect/eazybi-confluence/confluence_macros/dashboard?params={params}&user_is_admin={condition.user_is_admin}",
+        "editor": {
+          "insertTitle": {
+            "value": "Insert eazyBI for Confluence dashboard"
+          },
+          "editTitle": {
+            "value": "Edit eazyBI for Confluence dashboard"
+          },
+          "url": "/atlassian-connect/eazybi-confluence/confluence_macros/dashboard?editor=true&user_is_admin={condition.user_is_admin}",
+          "width": "90%"
+        },
+        "parameters": [
+          {
+            "identifier": "params",
+            "name": {
+              "value": "Params"
+            },
+            "type": "string",
+            "required": true
+          }
+        ],
+        "categories": [
+          "external-content",
+          "reporting"
+        ],
+        "icon": {
+          "url": "/images/eazybi_gadget_square.png"
+        },
+        "imagePlaceholder": {
+          "width": 300,
+          "height": 30,
+          "url": "/atlassian-connect/eazybi-confluence/confluence_macros/image_placeholder"
+        },
+        "width": "100%"
+      },
+      {
+        "key": "jira-report-gadget",
+        "name": {
+          "value": "eazyBI for Jira report"
+        },
+        "description": {
+          "value": "Embed selected eazyBI for Jira report."
+        },
+        "renderModes": {
+          "default": {
+            "url": "/atlassian-connect/eazybi-confluence/confluence_macros/report.png?params={params}&base_plugin=eazybi-jira&user_is_admin={condition.user_is_admin}"
+          }
+        },
+        "url": "/atlassian-connect/eazybi-confluence/confluence_macros/report?params={params}&base_plugin=eazybi-jira&user_is_admin={condition.user_is_admin}",
+        "editor": {
+          "insertTitle": {
+            "value": "Insert eazyBI for Jira report"
+          },
+          "editTitle": {
+            "value": "Edit eazyBI for Jira report"
+          },
+          "url": "/atlassian-connect/eazybi-confluence/confluence_macros/report?editor=true&base_plugin=eazybi-jira&user_is_admin={condition.user_is_admin}",
+          "width": "90%"
+        },
+        "parameters": [
+          {
+            "identifier": "params",
+            "name": {
+              "value": "Params"
+            },
+            "type": "string",
+            "required": true
+          }
+        ],
+        "categories": [
+          "external-content",
+          "reporting"
+        ],
+        "icon": {
+          "url": "/images/eazybi_gadget_square.png"
+        },
+        "imagePlaceholder": {
+          "width": 300,
+          "height": 30,
+          "url": "/atlassian-connect/eazybi-confluence/confluence_macros/image_placeholder?base_plugin=eazybi-jira"
+        },
+        "width": "100%"
+      },
+      {
+        "key": "jira-dashboard-gadget",
+        "name": {
+          "value": "eazyBI for Jira dashboard"
+        },
+        "description": {
+          "value": "Embed selected eazyBI for Jira dashboard."
+        },
+        "renderModes": {
+          "default": {
+            "url": "/atlassian-connect/eazybi-confluence/confluence_macros/dashboard.png?params={params}&base_plugin=eazybi-jira&user_is_admin={condition.user_is_admin}"
+          }
+        },
+        "url": "/atlassian-connect/eazybi-confluence/confluence_macros/dashboard?params={params}&base_plugin=eazybi-jira&user_is_admin={condition.user_is_admin}",
+        "editor": {
+          "insertTitle": {
+            "value": "Insert eazyBI for Jira dashboard"
+          },
+          "editTitle": {
+            "value": "Edit eazyBI for Jira dashboard"
+          },
+          "url": "/atlassian-connect/eazybi-confluence/confluence_macros/dashboard?editor=true&base_plugin=eazybi-jira&user_is_admin={condition.user_is_admin}",
+          "width": "90%"
+        },
+        "parameters": [
+          {
+            "identifier": "params",
+            "name": {
+              "value": "Params"
+            },
+            "type": "string",
+            "required": true
+          }
+        ],
+        "categories": [
+          "external-content",
+          "reporting"
+        ],
+        "icon": {
+          "url": "/images/eazybi_gadget_square.png"
+        },
+        "imagePlaceholder": {
+          "width": 300,
+          "height": 30,
+          "url": "/atlassian-connect/eazybi-confluence/confluence_macros/image_placeholder?base_plugin=eazybi-jira"
+        },
+        "width": "100%"
+      }
+    ],
     "webhooks": [
       {
-        "event": "jira:issue_created",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issue_created",
-        "excludeBody": true
+        "event": "page_created",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=page_created"
       },
       {
-        "event": "jira:issue_updated",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issue_updated",
-        "excludeBody": true
+        "event": "page_moved",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=page_moved"
       },
       {
-        "event": "jira:issue_deleted",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issue_deleted",
-        "excludeBody": true
+        "event": "page_removed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=page_removed"
       },
       {
-        "event": "worklog_created",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=worklog_created",
-        "excludeBody": true
+        "event": "page_restored",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=page_restored"
       },
       {
-        "event": "worklog_updated",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=worklog_updated",
-        "excludeBody": true
+        "event": "page_trashed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=page_trashed"
       },
       {
-        "event": "worklog_deleted",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=worklog_deleted",
-        "excludeBody": true
+        "event": "page_updated",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=page_updated"
       },
       {
-        "event": "comment_created",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=comment_created",
-        "excludeBody": true
+        "event": "page_viewed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=page_viewed"
       },
       {
-        "event": "comment_updated",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=comment_updated",
-        "excludeBody": true
+        "event": "search_performed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=search_performed"
       },
       {
-        "event": "comment_deleted",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=comment_deleted",
-        "excludeBody": true
+        "event": "attachment_created",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=attachment_created"
       },
       {
-        "event": "issuelink_created",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issuelink_created",
-        "excludeBody": false
+        "event": "attachment_removed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=attachment_removed"
       },
       {
-        "event": "issuelink_deleted",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issuelink_deleted",
-        "excludeBody": false
+        "event": "attachment_restored",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=attachment_restored"
       },
       {
-        "event": "sprint_deleted",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?sprint_id={sprint.id}&event=sprint_deleted",
-        "excludeBody": true
+        "event": "attachment_trashed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=attachment_trashed"
       },
       {
-        "event": "sprint_updated",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?sprint_id={sprint.id}&event=sprint_updated",
-        "excludeBody": true
+        "event": "attachment_updated",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=attachment_updated"
       },
       {
-        "event": "sprint_started",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?sprint_id={sprint.id}&event=sprint_started",
-        "excludeBody": true
+        "event": "label_added",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=label_added"
       },
       {
-        "event": "sprint_closed",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?sprint_id={sprint.id}&event=sprint_closed",
-        "excludeBody": true
+        "event": "label_removed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=label_removed"
       },
       {
-        "event": "board_configuration_changed",
-        "url": "/atlassian-connect/eazybi-jira/webhooks?board_id={board.id}&event=board_configuration_changed",
-        "excludeBody": true
+        "event": "blog_viewed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=blog_viewed"
+      },
+      {
+        "event": "blog_created",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=blog_created"
+      },
+      {
+        "event": "blog_removed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=blog_removed"
+      },
+      {
+        "event": "blog_restored",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=blog_restored"
+      },
+      {
+        "event": "blog_trashed",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=blog_trashed"
+      },
+      {
+        "event": "blog_updated",
+        "url": "/atlassian-connect/eazybi-confluence/webhooks?event=blog_updated"
       }
     ]
   },
