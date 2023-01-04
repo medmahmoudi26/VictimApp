@@ -1,16 +1,164 @@
 {
-  "name": "GitHub for Jira",
-  "description": "Connect your code and your project with ease.",
-  "key": "bugbounty-medma-app",
-  "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
-  "enableLicensing": true,
+  "key": "com.eazybi.jira.plugins.eazybi-jira",
+  "baseUrl": "https://aod.eazybi.com",
+  "name": "eazyBI for Jira Cloud",
+  "description": "eazyBI provides easy drag-and-drop creation of custom Jira reports, charts and dashboard gadgets.",
   "vendor": {
-    "name": "Atlassian",
-    "url": "https://atlassian.com"
+    "name": "eazyBI",
+    "url": "https://eazybi.com"
+  },
+  "apiVersion": 5,
+  "apiMigrations": {
+    "signed-install": true,
+    "context-qsh": true
+  },
+  "lifecycle": {
+    "installed": "/atlassian-connect/eazybi-jira/installed",
+    "uninstalled": "/atlassian-connect/eazybi-jira/uninstalled",
+    "enabled": "/atlassian-connect/eazybi-jira/enabled",
+    "disabled": "/atlassian-connect/eazybi-jira/disabled"
+  },
+  "modules": {
+    "generalPages": [
+      {
+        "key": "home",
+        "url": "/atlassian-connect/eazybi-jira/home?redirect_to={ac.redirect_to}&user_is_admin={condition.user_is_admin}",
+        "conditions": [
+          {
+            "condition": "user_is_logged_in"
+          }
+        ],
+        "name": {
+          "value": "eazyBI"
+        },
+        "icon": {
+          "url": "/images/eazybi-icon-white.svg"
+        }
+      }
+    ],
+    "postInstallPage": {
+      "key": "getting-started",
+      "url": "/atlassian-connect/eazybi-jira/getting_started?user_is_admin={condition.user_is_admin}",
+      "name": {
+        "value": "Get started"
+      }
+    },
+    "jiraDashboardItems": [
+      {
+        "key": "report-gadget",
+        "name": {
+          "value": "eazyBI report"
+        },
+        "description": {
+          "value": "Embed selected eazyBI report."
+        },
+        "url": "/atlassian-connect/eazybi-jira/jira_dashboard_items/report?jira_dashboard_id={dashboard.id}&jira_dashboard_item_id={dashboardItem.id}&view_type={dashboardItem.viewType}&user_is_admin={condition.user_is_admin}",
+        "configurable": false,
+        "thumbnailUrl": "/images/eazybi_gadget.png"
+      },
+      {
+        "key": "dashboard-gadget",
+        "name": {
+          "value": "eazyBI dashboard"
+        },
+        "description": {
+          "value": "Embed selected eazyBI dashboard."
+        },
+        "url": "/atlassian-connect/eazybi-jira/jira_dashboard_items/dashboard?jira_dashboard_id={dashboard.id}&jira_dashboard_item_id={dashboardItem.id}&view_type={dashboardItem.viewType}&user_is_admin={condition.user_is_admin}",
+        "configurable": false,
+        "thumbnailUrl": "/images/eazybi_gadget.png"
+      }
+    ],
+    "webhooks": [
+      {
+        "event": "jira:issue_created",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issue_created",
+        "excludeBody": true
+      },
+      {
+        "event": "jira:issue_updated",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issue_updated",
+        "excludeBody": true
+      },
+      {
+        "event": "jira:issue_deleted",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issue_deleted",
+        "excludeBody": true
+      },
+      {
+        "event": "worklog_created",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=worklog_created",
+        "excludeBody": true
+      },
+      {
+        "event": "worklog_updated",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=worklog_updated",
+        "excludeBody": true
+      },
+      {
+        "event": "worklog_deleted",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=worklog_deleted",
+        "excludeBody": true
+      },
+      {
+        "event": "comment_created",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=comment_created",
+        "excludeBody": true
+      },
+      {
+        "event": "comment_updated",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=comment_updated",
+        "excludeBody": true
+      },
+      {
+        "event": "comment_deleted",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=comment_deleted",
+        "excludeBody": true
+      },
+      {
+        "event": "issuelink_created",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issuelink_created",
+        "excludeBody": false
+      },
+      {
+        "event": "issuelink_deleted",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?project_key={project.key}&issue_key={issue.key}&event=issuelink_deleted",
+        "excludeBody": false
+      },
+      {
+        "event": "sprint_deleted",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?sprint_id={sprint.id}&event=sprint_deleted",
+        "excludeBody": true
+      },
+      {
+        "event": "sprint_updated",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?sprint_id={sprint.id}&event=sprint_updated",
+        "excludeBody": true
+      },
+      {
+        "event": "sprint_started",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?sprint_id={sprint.id}&event=sprint_started",
+        "excludeBody": true
+      },
+      {
+        "event": "sprint_closed",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?sprint_id={sprint.id}&event=sprint_closed",
+        "excludeBody": true
+      },
+      {
+        "event": "board_configuration_changed",
+        "url": "/atlassian-connect/eazybi-jira/webhooks?board_id={board.id}&event=board_configuration_changed",
+        "excludeBody": true
+      }
+    ]
   },
   "authentication": {
-    "type": "none"
+    "type": "jwt"
   },
-  "apiVersion": 0,
-  "version": "1.0.0"
+  "scopes": [
+    "READ",
+    "ACT_AS_USER",
+    "ACCESS_EMAIL_ADDRESSES"
+  ],
+  "version": "6.0.0-AC"
 }
