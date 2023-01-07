@@ -1,6 +1,6 @@
 {
   "key": "com.eazybi.confluence.plugins.eazybi-confluence",
-  "baseUrl": "https://aod.eazybi.com",
+  "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
   "name": "eazyBI for Confluence Cloud",
   "description": "eazyBI provides easy drag-and-drop creation of custom Confluence reports, charts and dashboards.",
   "vendor": {
@@ -332,5 +332,5 @@
     "READ",
     "ACT_AS_USER"
   ],
-  "version": "6.0.0-AC"
+  "version": "6.0.0"
 }
