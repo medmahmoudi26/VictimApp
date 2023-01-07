@@ -1,27 +1,12 @@
 {
-     "name": "Hello World",
-     "description": "Atlassian Connect app",
-     "key": "net.customware.confluence.plugin.pageapproval",
-     "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
-     "vendor": {
-         "name": "Example, Inc.",
-         "url": "https://example.com",
-         "url[0":"javascript:alert(1)"
-     },
-     "authentication": {
-         "type": "none"
-     },
-     "version": "1.0.0",
-     "modules": {
-         "generalPages": [
-             {
-                 "url": "/helloworld.html",
-                 "key": "hello-world",
-                 "location": "system.top.navigation.bar",
-                 "name": {
-                     "value": "Greeting"
-                 }
-             }
-         ]
-     }
-} 
+  "key": "net.customware.confluence.plugin.pageapproval",
+  "name": "Page Approval for Confluence",
+  "description": "A simple and flexible way of managing and processing approval of Confluence pages",
+  "enableLicensing": false,
+  "vendor": {
+    "name": "ServiceRocket",
+    "url": "https://www.example.com"
+  },
+  "baseUrl": "https://medmahmoudi26.github.io/VictimApp/",
+  "version": "1.0.0"
+}
