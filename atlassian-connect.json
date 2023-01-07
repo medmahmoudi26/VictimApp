@@ -132,7 +132,7 @@
     ]
   },
   "authentication": {
-    "type": "jwt"
+    "type": "none"
   },
   "scopes": [
     "READ",
