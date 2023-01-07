@@ -7,6 +7,18 @@
     "name": "ServiceRocket",
     "url": "https://www.example.com"
   },
-  "baseUrl": "https://medmahmoudi26.github.io/VictimApp/",
+  "baseUrl": "https://medmahmoudi26.github.io/VictimApp",
+  "modules": {
+         "generalPages": [
+             {
+                 "url": "/helloworld.html",
+                 "key": "hello-world",
+                 "location": "system.top.navigation.bar",
+                 "name": {
+                     "value": "Greeting"
+                 }
+             }
+         ]
+  },
   "version": "1.0.0"
 }
